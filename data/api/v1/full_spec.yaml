@@ -6545,7 +6545,20 @@ components:
         level objective.
       properties:
         data:
-          $ref: '#/components/schemas/ServiceLevelObjective'
+          description: Details of single service level objective.
+          properties:
+            additionalProperties:
+              $ref: '#/components/schemas/ServiceLevelObjective'
+            configured_alert_ids:
+              description: A list of SLO monitors IDs that reference this SLO.
+              example:
+              - 12345
+              items:
+                description: A monitor ID.
+                format: int64
+                type: integer
+              type: array
+          type: object
         errors:
           description: 'An array of error messages. Each endpoint documents how/whether
             this field is
@@ -19528,6 +19541,13 @@ paths:
         required: true
         schema:
           type: string
+      - description: Get the IDs of SLO monitors that reference this SLO.
+        example: true
+        in: query
+        name: with_configured_alert_ids
+        required: false
+        schema:
+          type: boolean
       responses:
         '200':
           content:
