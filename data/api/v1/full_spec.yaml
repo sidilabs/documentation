@@ -7763,6 +7763,10 @@ components:
     SyntheticsAPIStep:
       description: The steps used in a Synthetics multistep API test.
       properties:
+        allowFailure:
+          description: Determines whether or not to continue with test if this step
+            fails.
+          type: boolean
         assertions:
           default: []
           description: Array of assertions used for the test.
@@ -7775,6 +7779,12 @@ components:
           items:
             $ref: '#/components/schemas/SyntheticsParsingOptions'
           type: array
+        isCritical:
+          description: 'Determines whether or not to consider the entire test as failed
+            if this step fails.
+
+            Can be used only if `allowFailure` is `true`.'
+          type: boolean
         name:
           description: The name of the step.
           type: string
@@ -8061,6 +8071,10 @@ components:
       - recordSome
       - tlsVersion
       - minTlsVersion
+      - latency
+      - packetLossPercentage
+      - packetsReceived
+      - networkHop
       type: string
       x-enum-varnames:
       - BODY
@@ -8073,6 +8087,10 @@ components:
       - RECORD_SOME
       - TLS_VERSION
       - MIN_TLS_VERSION
+      - LATENCY
+      - PACKET_LOSS_PERCENTAGE
+      - PACKETS_RECEIVED
+      - NETWORK_HOP
     SyntheticsBasicAuth:
       description: Object to handle basic authentication when performing the test.
       properties:
@@ -8177,6 +8195,10 @@ components:
           type: array
         request:
           $ref: '#/components/schemas/SyntheticsTestRequest'
+        setCookie:
+          description: Cookies to be used for the request, using the [Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie)
+            syntax.
+          type: string
         variables:
           description: Array of variables used for the test steps.
           items:
@@ -9186,13 +9208,14 @@ components:
     SyntheticsTestDetailsSubType:
       description: 'The subtype of the Synthetic API test, `http`, `ssl`, `tcp`,
 
-        `dns` or `multi`.'
+        `dns`, `icmp` or `multi`.'
       enum:
       - http
       - ssl
       - tcp
       - dns
       - multi
+      - icmp
       type: string
       x-enum-varnames:
       - HTTP
@@ -9200,6 +9223,7 @@ components:
       - TCP
       - DNS
       - MULTI
+      - ICMP
     SyntheticsTestDetailsType:
       description: Type of the Synthetic test, either `api` or `browser`.
       enum:
@@ -9348,6 +9372,12 @@ components:
         dnsServer:
           description: DNS server to use for DNS tests.
           type: string
+        dnsServerPort:
+          description: DNS server port to use for DNS tests.
+          format: int32
+          maximum: 65535
+          minimum: 1
+          type: integer
         headers:
           $ref: '#/components/schemas/SyntheticsTestHeaders'
         host:
@@ -9358,6 +9388,12 @@ components:
         noSavingResponseBody:
           description: Determines whether or not to save the response body.
           type: boolean
+        numberOfPackets:
+          description: Number of pings to use per test.
+          format: int32
+          maximum: 10
+          minimum: 0
+          type: integer
         port:
           description: Port to use when performing the test.
           format: int64
@@ -9365,6 +9401,10 @@ components:
         query:
           description: Query to use for the test.
           type: object
+        shouldTrackHops:
+          description: Turns on a traceroute probe to discover all gateways along
+            the path to the host destination.
+          type: boolean
         timeout:
           description: Timeout in seconds for the test.
           format: double
